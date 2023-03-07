@@ -50,6 +50,22 @@ class LivroController {
         .send({ message: `${error.message} - Falha ao atualizar livro` });
     }
   };
+
+  static excluirLivro = async (req, res) => {
+    const id = req.params.id;
+    try {
+      const livro = await livros.findByIdAndDelete(id);
+      if (!livro) {
+        res.status(404).send({ message: "Livro não encontrado" });
+      } else {
+        res.status(200).send({ message: "Livro excluído com sucesso" });
+      }
+    } catch (error) {
+      res
+        .status(500)
+        .send({ message: `${error.message} - Falha ao atualizar livro` });
+    }
+  };
 }
 
 export default LivroController;
