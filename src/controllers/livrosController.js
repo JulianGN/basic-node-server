@@ -3,7 +3,11 @@ import livros from "../models/Livro.js";
 class LivroController {
   static listarLivros = async (req, res) => {
     try {
-      const resultLivros = await livros.find().exec(); // use the exec() method to return a promise
+      const resultLivros = await livros
+        .find()
+        .populate("autor") // Insere o objeto autor a partir do schema respectivo
+        .exec(); // use the exec() method to return a promise
+
       res.status(200).json(resultLivros);
     } catch (error) {
       console.error(error);
@@ -13,12 +17,23 @@ class LivroController {
 
   static listarLivroPorId = async (req, res) => {
     const id = req.params.id;
-    const livro = await livros.findById(id);
+    const livro = await livros.findById(id).populate("autor", "nome"); // Vai inserir o objeto autor mas apenas mostrar o campo nome
 
     if (!livro) {
       res.status(400).send({ message: "Livro não encontrado" });
     } else {
       res.status(200).send(livro);
+    }
+  };
+
+  static listarLivroPorEditora = async (req, res) => {
+    const editora = req.query.editora;
+    const livrosPorEditora = await livros.find({ editora: editora }, {});
+
+    if (!livrosPorEditora) {
+      res.status(400).send({ message: "Livro não encontrado" });
+    } else {
+      res.status(200).send(livrosPorEditora);
     }
   };
 
